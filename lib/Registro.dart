@@ -116,7 +116,14 @@ class RegisterView extends StatelessWidget {
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const LoginView(),
+                          ),
+                        );
+                      }, //REGISTRARSE
                       child: const Text(
                         "Registrarse",
                         style: TextStyle(color: Colors.white, fontSize: 16),

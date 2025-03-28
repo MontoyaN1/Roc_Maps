@@ -102,25 +102,39 @@ class LoginView extends StatelessWidget {
                   SizedBox(
                     width: double.infinity,
                     height: 50,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const HomeView(),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.black,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
                           ),
-                        );
-                      }, //INGRESA PANTALLA PRINCIPAL
-                      child: const Text(
-                        "Ingresar",
-                        style: TextStyle(color: Colors.white, fontSize: 16),
-                      ),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const HomeView(),
+                              ),
+                            );
+                          }, //INGRESA PANTALLA PRINCIPAL
+                          child: const Text(
+                            "Ingresar",
+                            style: TextStyle(color: Colors.white, fontSize: 16),
+                          ),
+                        ),
+                        SizedBox(
+                          width: 200,
+                          height: 200,
+                          child: ElevatedButton(
+                              onPressed: () {},
+                              child: Image.asset(
+                                "assets/images/google_continue_dark.png",
+                              )),
+                        )
+                      ],
                     ),
                   ),
                   const SizedBox(height: 10),
