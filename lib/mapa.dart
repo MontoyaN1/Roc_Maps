@@ -148,10 +148,10 @@ class _LiveLocationMapState extends State<MapaTiempoReal> {
         ],
       ),
       floatingActionButton: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.only(left: 20.0),
             child: FloatingActionButton(
               onPressed: () {
                 if (_currentPosition != null) {
@@ -165,6 +165,13 @@ class _LiveLocationMapState extends State<MapaTiempoReal> {
                 }
               },
               child: const Icon(Icons.my_location),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 30.0),
+            child: FloatingActionButton(
+              onPressed: () {}, //LlEVAR AL FORMULARIO
+              child: Icon(Icons.add),
             ),
           ),
         ],

@@ -28,12 +28,7 @@ class _HomeView extends State<HomeView> {
         children: [
           Padding(
             padding: EdgeInsets.only(bottom: size.height * _panelHeight),
-            child: const MapaTiempoReal(), // Tu widget de mapa
-          ),
-          Positioned(
-            right: 10,
-            //bottom: size.width * 0.1,
-            child: ElevatedButton(onPressed: () {}, child: Icon(Icons.add)),
+            child: const MapaTiempoReal(),
           ),
 
           DraggableScrollableSheet(
@@ -45,7 +40,6 @@ class _HomeView extends State<HomeView> {
             builder: (context, scrollController) {
               return NotificationListener<DraggableScrollableNotification>(
                 onNotification: (notification) {
-                  // Actualiza el padding del mapa cuando el panel se mueve
                   setState(() {
                     _panelHeight = notification.extent;
                   });
