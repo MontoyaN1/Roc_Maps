@@ -78,23 +78,24 @@ class LoginView extends StatelessWidget {
                       const SizedBox(height: 8),
                       const Text(
                         "Inicia sesión para continuar",
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 14,
-                        ),
+                        style: TextStyle(color: Colors.grey, fontSize: 14),
                       ),
                       const SizedBox(height: 30),
-                      const Text("NOMBRE",
-                          style: TextStyle(fontWeight: FontWeight.bold)),
+                      const Text(
+                        "NOMBRE",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                       const SizedBox(height: 6),
                       TextField(
                         controller: nombreController,
                         style: TextStyle(
-                            color: Theme.of(context).colorScheme.onSurface),
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
                         decoration: InputDecoration(
                           hintText: "Ingrese su nombre",
                           hintStyle: TextStyle(
-                              color: Colors.grey), // texto sugerido visible
+                            color: Colors.grey,
+                          ), // texto sugerido visible
                           filled: true,
                           fillColor: Theme.of(context).colorScheme.surface,
                           border: OutlineInputBorder(
@@ -104,14 +105,17 @@ class LoginView extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 20),
-                      const Text("CONTRASEÑA",
-                          style: TextStyle(fontWeight: FontWeight.bold)),
+                      const Text(
+                        "CONTRASEÑA",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                       const SizedBox(height: 6),
                       TextField(
                         controller: contrasenaController,
                         obscureText: true,
                         style: TextStyle(
-                            color: Theme.of(context).colorScheme.onSurface),
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
                         decoration: InputDecoration(
                           hintText: "Ingrese su contraseña",
                           hintStyle: TextStyle(color: Colors.grey),
@@ -129,7 +133,7 @@ class LoginView extends StatelessWidget {
                         height: 50,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.black,
+                            backgroundColor: Colors.green,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
@@ -178,8 +182,9 @@ class LoginView extends StatelessWidget {
                           child: const Text(
                             "Crea una cuenta",
                             style: TextStyle(
-                                color: Colors.blue,
-                                fontWeight: FontWeight.bold),
+                              color: Colors.blue,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ),
@@ -202,9 +207,10 @@ class CircleBackgroundPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = Colors.green
-      ..style = PaintingStyle.fill;
+    final paint =
+        Paint()
+          ..color = Colors.green
+          ..style = PaintingStyle.fill;
 
     for (final point in points) {
       canvas.drawCircle(point, 60, paint);

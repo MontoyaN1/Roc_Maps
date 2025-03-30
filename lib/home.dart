@@ -1,3 +1,4 @@
+import 'package:rocmaps/chat.dart';
 import 'barra_lateral.dart';
 import 'package:flutter/material.dart';
 import 'mapa.dart';
@@ -10,13 +11,13 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeView extends State<HomeView> {
-  double _panelHeight = 0.3;
+  double _panelHeight = 0.4;
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 7, 0, 0),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       endDrawer: Barra(),
       appBar: AppBar(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -28,6 +29,11 @@ class _HomeView extends State<HomeView> {
           Padding(
             padding: EdgeInsets.only(bottom: size.height * _panelHeight),
             child: const MapaTiempoReal(), // Tu widget de mapa
+          ),
+          Positioned(
+            right: 10,
+            //bottom: size.width * 0.1,
+            child: ElevatedButton(onPressed: () {}, child: Icon(Icons.add)),
           ),
 
           DraggableScrollableSheet(
@@ -45,19 +51,9 @@ class _HomeView extends State<HomeView> {
                   });
                   return true;
                 },
-                child: ClipRRect(
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(60),
-                  ),
-                  child: Container(
-                    color: Theme.of(context).scaffoldBackgroundColor,
-                    child: ListView(
-                      controller: scrollController,
-                      children: [
-                        const Center(child: Text("Contenido del panel")),
-                      ],
-                    ),
-                  ),
+                child: Container(
+                  color: Theme.of(context).scaffoldBackgroundColor,
+                  child: ChatUI(),
                 ),
               );
             },
