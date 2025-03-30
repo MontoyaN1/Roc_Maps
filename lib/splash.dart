@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:ap/Login.dart';
+import 'login.dart';
 import 'package:flutter/material.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -25,10 +25,9 @@ class StartState extends State<SplashScreen> {
 
   route() {
     Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const LoginView(),
-        ));
+      context,
+      MaterialPageRoute(builder: (context) => const LoginView()),
+    );
   }
 
   @override
@@ -42,17 +41,22 @@ class StartState extends State<SplashScreen> {
         children: [
           Container(
             decoration: const BoxDecoration(
-                color: Color.fromARGB(255, 22, 163, 93),
-                gradient: LinearGradient(colors: [
+              color: Color.fromARGB(255, 22, 163, 93),
+              gradient: LinearGradient(
+                colors: [
                   (Color.fromARGB(255, 252, 252, 252)),
-                  Color.fromARGB(255, 22, 163, 93)
-                ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
+                  Color.fromARGB(255, 22, 163, 93),
+                ],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+            ),
           ),
           Center(
             child: SizedBox(
               child: Image.asset("assets/images/logo_rocmaps.png"),
             ),
-          )
+          ),
         ],
       ),
     );
