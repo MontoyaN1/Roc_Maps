@@ -34,11 +34,16 @@ class _LiveLocationMapState extends State<MapaTiempoReal> {
     super.dispose();
   }
 
+  void _moveCamera(LatLng position, [double zoom = 15]) {
+    _mapController.move(position, zoom);
+  }
+
   Future<void> _initLocationService() async {
     //SERVICIO DISPONIBLE
     bool serviceEnabled;
     //PERMISO DE POSICION
     LocationPermission permission;
+    bool followUser = true;
 
     //MIRAMOS SI EL SERVICIO ESTA DISPONIBLE, ASINCRONO
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
@@ -61,51 +66,48 @@ class _LiveLocationMapState extends State<MapaTiempoReal> {
     }
 
     try {
-      //tOMAMOS LA POSICION
       _currentPosition = await Geolocator.getCurrentPosition();
-      if (mounted) {
+      if (!mounted) return;
+
+      setState(() {
+        _moveCamera(
+          LatLng(_currentPosition!.latitude, _currentPosition!.longitude),
+        );
+      });
+
+      // CONFIGURAR STREAM
+      _positionStream = Geolocator.getPositionStream(
+        locationSettings: LocationSettings(distanceFilter: 5),
+      ).listen((Position position) {
+        if (!mounted) return;
+
         setState(() {
-          //DAMOS VALOR A LA POSICION, LATITUD Y LONGITUD
-          _mapController.move(
-            LatLng(_currentPosition!.latitude, _currentPosition!.longitude),
-            15,
-          );
-        });
-      }
-    } catch (e) {
-      debugPrint('Error obteniendo ubicación: $e');
-    }
-    //ACTUALIZAMOS POSICION EN TIEMPO REAL
-    _positionStream = Geolocator.getPositionStream().listen((
-      Position position,
-    ) {
-      if (mounted) {
-        setState(() {
-          //DAMOS LA POSICION ACTUAL
           _currentPosition = position;
+          if (followUser) {
+            // SIGUE SI ESTA ACTIVO
+            _moveCamera(LatLng(position.latitude, position.longitude));
+          }
         });
-      }
-    });
+      });
+    } catch (e) {
+      debugPrint('Error de ubicación: $e');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Mapa con Ubicación en Tiempo Real'),
-        automaticallyImplyLeading: false,
-      ),
       body: FlutterMap(
         mapController: _mapController,
         options: MapOptions(
-          //SI LA POSICION ES NULA POR FALTA DE PERMISOS O LOCALIZACION, SE MUESTRA POR DEFAULT CDMX
+          //SI LA POSICION ES NULA POR FALTA DE PERMISOS O LOCALIZACION, DEFAULT BGA
           initialCenter:
               _currentPosition != null
                   ? LatLng(
                     _currentPosition!.latitude,
                     _currentPosition!.longitude,
                   )
-                  : const LatLng(19.4326, -99.1332),
+                  : const LatLng(7.12704, -73.11891),
           initialZoom: 15,
         ),
         children: [
@@ -145,16 +147,27 @@ class _LiveLocationMapState extends State<MapaTiempoReal> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          if (_currentPosition != null) {
-            _mapController.move(
-              LatLng(_currentPosition!.latitude, _currentPosition!.longitude),
-              15,
-            );
-          }
-        },
-        child: const Icon(Icons.my_location),
+      floatingActionButton: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: FloatingActionButton(
+              onPressed: () {
+                if (_currentPosition != null) {
+                  _mapController.move(
+                    LatLng(
+                      _currentPosition!.latitude,
+                      _currentPosition!.longitude,
+                    ),
+                    15,
+                  );
+                }
+              },
+              child: const Icon(Icons.my_location),
+            ),
+          ),
+        ],
       ),
     );
   }

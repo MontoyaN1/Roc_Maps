@@ -2,9 +2,15 @@ import 'barra_lateral.dart';
 import 'package:flutter/material.dart';
 import 'mapa.dart';
 
-class HomeView extends StatelessWidget {
+class HomeView extends StatefulWidget {
   const HomeView({super.key});
 
+  @override
+  State<HomeView> createState() => _HomeView();
+}
+
+class _HomeView extends State<HomeView> {
+  double _panelHeight = 0.3;
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -19,34 +25,42 @@ class HomeView extends StatelessWidget {
       ),
       body: Stack(
         children: [
-          Container(
-            height: size.height,
-            width: size.width,
-            color: Colors.grey[400],
+          Padding(
+            padding: EdgeInsets.only(bottom: size.height * _panelHeight),
+            child: const MapaTiempoReal(), // Tu widget de mapa
           ),
-          MapaTiempoReal(),
-          Positioned(
-            top: size.height * 0.35,
-            left: 0,
-            right: 0,
-            child: ClipRRect(
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(60),
-              ),
-              child: Container(
-                height: size.height * 0.65,
-                color: Theme.of(context).scaffoldBackgroundColor,
-                constraints: BoxConstraints(
-                  maxHeight: size.height * 0.70,
-                ),
-                child: const Center(
-                  child: Text(
-                    'Contenido de HomeView',
-                    style: TextStyle(fontSize: 18),
+
+          DraggableScrollableSheet(
+            initialChildSize: _panelHeight,
+            minChildSize: 0.2, // 20% mínimo
+            maxChildSize: 0.7, // 70% máximo
+            snap: true,
+            snapSizes: const [0.3, 0.5, 0.7],
+            builder: (context, scrollController) {
+              return NotificationListener<DraggableScrollableNotification>(
+                onNotification: (notification) {
+                  // Actualiza el padding del mapa cuando el panel se mueve
+                  setState(() {
+                    _panelHeight = notification.extent;
+                  });
+                  return true;
+                },
+                child: ClipRRect(
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(60),
+                  ),
+                  child: Container(
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                    child: ListView(
+                      controller: scrollController,
+                      children: [
+                        const Center(child: Text("Contenido del panel")),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ),
+              );
+            },
           ),
         ],
       ),
