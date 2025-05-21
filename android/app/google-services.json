@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1030065428890",
+    "project_id": "rocmaps",
+    "storage_bucket": "rocmaps.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1030065428890:android:855866b029e6619ba68223",
+        "android_client_info": {
+          "package_name": "com.example.roc_maps"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyByIlcBfKRFD6oDD66BXbPcD0h6QN1iSEg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
