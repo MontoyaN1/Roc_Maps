@@ -119,4 +119,4 @@ app.*.symbols
 !/dev/ci/**/Gemfile.lock
 
 # Google Services
-**/android/app/google-Services.json
+**/android/app/google-services.json
