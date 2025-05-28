@@ -3,9 +3,14 @@ plugins {
 
   // Add the dependency for the Google services Gradle plugin
   id("com.google.gms.google-services") version "4.4.2" apply false
+<<<<<<< HEAD
     
 }
 
+=======
+
+}
+>>>>>>> a37d682af13f0e7b4451e5354c7779b53811c6f9
 allprojects {
     repositories {
         google()

@@ -22,22 +22,6 @@ dependencies:
   geolocator_linux: ^0.2.3
   flutter_chat_ui: ^1.6.15
   flutter_chat_types: ^3.6.2
-  http: ^1.4.0
-  flutter_launcher_icons: ^0.13.1
-  firebase_auth: ^5.4.1
-  firebase_core: ^3.13.1
-  google_sign_in: ^6.3.0
-  firebase_database: ^11.1.0
-  uuid: ^4.2.2
-  share_plus: ^7.2.1
-
-
-flutter_launcher_icons:
-  android: true
-  ios: true
-  image_path: "assets/images/logo_rocmaps.png"
-
-
 
 dev_dependencies:
   flutter_test:

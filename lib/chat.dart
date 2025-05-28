@@ -23,8 +23,9 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
     super.initState();
-    _messagesRef = FirebaseDatabase.instance
-        .ref('groups/${widget.groupId}/messages');
+    _messagesRef = FirebaseDatabase.instance.ref(
+      'groups/${widget.groupId}/messages',
+    );
 
     // Marcar como leído todos los mensajes actuales
     _messagesRef.once().then((snapshot) {
@@ -67,13 +68,14 @@ class _ChatScreenState extends State<ChatScreen> {
                 }
 
                 final messagesMap = Map<String, dynamic>.from(
-                    snapshot.data!.snapshot.value as Map);
-                final messages = messagesMap.entries.toList()
-                  ..sort((a, b) {
-                    final tsA = a.value['timestamp'] ?? 0;
-                    final tsB = b.value['timestamp'] ?? 0;
-                    return tsA.compareTo(tsB);
-                  });
+                  snapshot.data!.snapshot.value as Map,
+                );
+                final messages =
+                    messagesMap.entries.toList()..sort((a, b) {
+                      final tsA = a.value['timestamp'] ?? 0;
+                      final tsB = b.value['timestamp'] ?? 0;
+                      return tsA.compareTo(tsB);
+                    });
 
                 return ListView.builder(
                   reverse: false,
@@ -87,33 +89,33 @@ class _ChatScreenState extends State<ChatScreen> {
 
                     return Container(
                       margin: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-                      alignment: isMe
-                          ? Alignment.centerRight
-                          : Alignment.centerLeft,
+                      alignment:
+                          isMe ? Alignment.centerRight : Alignment.centerLeft,
                       child: Column(
-                        crossAxisAlignment: isMe
-                            ? CrossAxisAlignment.end
-                            : CrossAxisAlignment.start,
+                        crossAxisAlignment:
+                            isMe
+                                ? CrossAxisAlignment.end
+                                : CrossAxisAlignment.start,
                         children: [
                           Container(
                             padding: EdgeInsets.symmetric(
-                                horizontal: 12, vertical: 8),
+                              horizontal: 12,
+                              vertical: 8,
+                            ),
                             decoration: BoxDecoration(
-                              color: isMe
-                                  ? Colors.green[200]
-                                  : Colors.grey[300],
+                              color:
+                                  isMe ? Colors.green[200] : Colors.grey[300],
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            child: Text(
-                              text,
-                              style: TextStyle(fontSize: 16),
-                            ),
+                            child: Text(text, style: TextStyle(fontSize: 16)),
                           ),
                           SizedBox(height: 2),
                           Text(
                             sender,
                             style: TextStyle(
-                                fontSize: 12, color: Colors.grey[600]),
+                              fontSize: 12,
+                              color: Colors.grey[600],
+                            ),
                           ),
                         ],
                       ),
@@ -137,10 +139,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     onSubmitted: (_) => _sendMessage(),
                   ),
                 ),
-                IconButton(
-                  icon: Icon(Icons.send),
-                  onPressed: _sendMessage,
-                )
+                IconButton(icon: Icon(Icons.send), onPressed: _sendMessage),
               ],
             ),
           ),
