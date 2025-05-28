@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'login.dart';
 import 'package:flutter/material.dart';
+import 'package:rocmaps/login.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});

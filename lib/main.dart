@@ -1,15 +1,18 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'rutas.dart';
 import 'splash.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
-  // ignore: library_private_types_in_public_api
   static _MyAppState? of(BuildContext context) =>
       context.findAncestorStateOfType<_MyAppState>();
 
@@ -18,7 +21,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  bool isDarkMode = false;
+  bool isDarkMode = true;
 
   void toggleTheme() {
     setState(() {
@@ -31,6 +34,16 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       title: 'Roc maps',
       debugShowCheckedModeBanner: false,
+      locale: const Locale('es'), // 👈 fuerza español
+      supportedLocales: const [
+        Locale('es'), // Español
+        Locale('en'), // Inglés (opcional)
+      ],
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
       theme: ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
@@ -40,14 +53,12 @@ class _MyAppState extends State<MyApp> {
       ),
       darkTheme: ThemeData(
         useMaterial3: true,
-        scaffoldBackgroundColor: const Color(0xFF121212), // fondo general
-        primaryColor: const Color(
-          0xFF1DB954,
-        ), // verde más brillante tipo Spotify
+        scaffoldBackgroundColor: const Color(0xFF121212),
+        primaryColor: const Color(0xFF1DB954),
         hintColor: Colors.grey[400],
-        cardColor: const Color(0xFF1E1E1E), // contenedores
+        cardColor: const Color(0xFF1E1E1E),
         colorScheme: ColorScheme.fromSeed(
-          seedColor: Color(0xFF1DB954), // color base para tema oscuro
+          seedColor: Color(0xFF1DB954),
           brightness: Brightness.dark,
         ),
         textTheme: const TextTheme(

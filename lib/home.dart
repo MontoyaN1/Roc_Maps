@@ -1,21 +1,20 @@
-import 'package:rocmaps/chat.dart';
-import 'barra_lateral.dart';
 import 'package:flutter/material.dart';
-import 'mapa.dart';
+import 'package:rocmaps/barra_lateral.dart';
+import 'package:rocmaps/mapa.dart';
 
 class HomeView extends StatefulWidget {
-  const HomeView({super.key});
+  final String? groupId;
+  final String? currentUserId;
+
+  const HomeView({super.key, this.groupId, this.currentUserId});
 
   @override
-  State<HomeView> createState() => _HomeView();
+  State<HomeView> createState() => _HomeViewState();
 }
 
-class _HomeView extends State<HomeView> {
-  double _panelHeight = 0.4;
+class _HomeViewState extends State<HomeView> {
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       endDrawer: Barra(),
@@ -24,35 +23,9 @@ class _HomeView extends State<HomeView> {
         elevation: 0,
         iconTheme: const IconThemeData(color: Color.fromARGB(255, 3, 87, 0)),
       ),
-      body: Stack(
-        children: [
-          Padding(
-            padding: EdgeInsets.only(bottom: size.height * _panelHeight),
-            child: const MapaTiempoReal(),
-          ),
-
-          DraggableScrollableSheet(
-            initialChildSize: _panelHeight,
-            minChildSize: 0.2, // 20% mínimo
-            maxChildSize: 0.7, // 70% máximo
-            snap: true,
-            snapSizes: const [0.3, 0.5, 0.7],
-            builder: (context, scrollController) {
-              return NotificationListener<DraggableScrollableNotification>(
-                onNotification: (notification) {
-                  setState(() {
-                    _panelHeight = notification.extent;
-                  });
-                  return true;
-                },
-                child: Container(
-                  color: Theme.of(context).scaffoldBackgroundColor,
-                  child: ChatUI(),
-                ),
-              );
-            },
-          ),
-        ],
+      body: MapaTiempoReal(
+        groupId: widget.groupId ?? 'sin_grupo',
+        userId: widget.currentUserId ?? 'anonimo',
       ),
     );
   }

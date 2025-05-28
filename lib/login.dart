@@ -1,26 +1,32 @@
-import 'alerta.dart';
+import 'package:rocmaps/auth_user.dart';
+import 'package:rocmaps/recupcontra.dart';
+
 import 'package:flutter/material.dart';
-import 'dart:math' as math;
 import 'home.dart';
 import 'registro.dart';
 
-class LoginView extends StatelessWidget {
+class LoginView extends StatefulWidget {
   const LoginView({super.key});
+
+  @override
+  _LoginViewState createState() => _LoginViewState();
+}
+
+class _LoginViewState extends State<LoginView> {
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController contrasenaController = TextEditingController();
+  final _auth = AuthUser();
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    contrasenaController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-
-    final List<Offset> circles = List.generate(
-      20,
-      (_) => Offset(
-        math.Random().nextDouble() * size.width,
-        math.Random().nextDouble() * (size.height * 0.4),
-      ),
-    );
-
-    final TextEditingController nombreController = TextEditingController();
-    final TextEditingController contrasenaController = TextEditingController();
 
     return Scaffold(
       backgroundColor: Colors.grey[400],
@@ -31,27 +37,30 @@ class LoginView extends StatelessWidget {
             width: size.width,
             color: Colors.grey[400],
           ),
-          SizedBox(
+          Container(
             height: size.height * 0.4,
             width: double.infinity,
-            child: Stack(
-              children: [
-                CustomPaint(
-                  size: Size(size.width, size.height * 0.4),
-                  painter: CircleBackgroundPainter(points: circles),
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Color(0xFFFDFDFD), // Blanco
+                  Color(0xFF16A35D), // Verde
+                ],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+            ),
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 30),
+                child: Image.asset(
+                  'assets/images/logo_rocmaps.png',
+                  height: 200,
                 ),
-                Center(
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 30),
-                    child: Image.asset(
-                      'assets/images/logo_rocmaps.png',
-                      height: 500,
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
           ),
+
           Positioned(
             bottom: 0,
             left: 0,
@@ -63,7 +72,7 @@ class LoginView extends StatelessWidget {
               child: Container(
                 height: size.height * 0.65,
                 color: Theme.of(context).scaffoldBackgroundColor,
-                child: Padding(
+                child: SingleChildScrollView(
                   padding: const EdgeInsets.all(20.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -82,28 +91,37 @@ class LoginView extends StatelessWidget {
                       ),
                       const SizedBox(height: 30),
                       const Text(
-                        "NOMBRE",
+                        "CORREO",
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 6),
                       TextField(
-                        controller: nombreController,
+                        controller: emailController,
                         style: TextStyle(
                           color: Theme.of(context).colorScheme.onSurface,
                         ),
                         decoration: InputDecoration(
-                          hintText: "Ingrese su nombre",
-                          hintStyle: TextStyle(
-                            color: Colors.grey,
-                          ), // texto sugerido visible
+                          hintText: "Ingrese su Correo Electrónico",
+                          hintStyle: const TextStyle(color: Colors.grey),
                           filled: true,
                           fillColor: Theme.of(context).colorScheme.surface,
-                          border: OutlineInputBorder(
+                          enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide.none,
+                            borderSide: BorderSide(
+                              color: Color(0xFF16A35D), // verde del splash
+                              width: 1.5,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                              color: Color(0xFF16A35D),
+                              width: 2.5,
+                            ),
                           ),
                         ),
                       ),
+
                       const SizedBox(height: 20),
                       const Text(
                         "CONTRASEÑA",
@@ -118,40 +136,46 @@ class LoginView extends StatelessWidget {
                         ),
                         decoration: InputDecoration(
                           hintText: "Ingrese su contraseña",
-                          hintStyle: TextStyle(color: Colors.grey),
+                          hintStyle: const TextStyle(color: Colors.grey),
                           filled: true,
                           fillColor: Theme.of(context).colorScheme.surface,
-                          border: OutlineInputBorder(
+                          enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide.none,
+                            borderSide: BorderSide(
+                              color: Color(
+                                0xFF16A35D,
+                              ), // mismo verde del splash
+                              width: 1.5,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                              color: Color(0xFF16A35D),
+                              width: 2.5,
+                            ),
                           ),
                         ),
                       ),
+
                       const SizedBox(height: 25),
                       SizedBox(
                         width: double.infinity,
                         height: 50,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.green,
+                            backgroundColor: Color(0xFF16A35D),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
                           ),
                           onPressed: () {
-                            final nombre = nombreController.text.trim();
-                            final contrasena = contrasenaController.text.trim();
-
-                            if (nombre.isEmpty || contrasena.isEmpty) {
-                              llenado(context);
-                            } else {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const HomeView(),
-                                ),
-                              );
-                            }
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const HomeView(),
+                              ),
+                            );
                           },
                           child: const Text(
                             "Ingresar",
@@ -159,10 +183,49 @@ class LoginView extends StatelessWidget {
                           ),
                         ),
                       ),
+                      const SizedBox(height: 20),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 50,
+                        child: OutlinedButton.icon(
+                          icon: Image.asset(
+                            'assets/images/gogle.png',
+                            height: 24,
+                          ),
+                          label: const Text("Continuar con Google"),
+                          onPressed: () async {
+                            final autenticado = await _auth.loginGoogle();
+
+                            if (autenticado != null) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const HomeView(),
+                                ),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    'Fallo autenticación de Google',
+                                  ), // Mensaje de error en la interfaz
+                                ),
+                              );
+                            }
+                          },
+                        ),
+                      ),
                       const SizedBox(height: 10),
                       Center(
                         child: TextButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const RecupView(),
+                              ),
+                            );
+                          },
                           child: const Text(
                             "¿Olvidaste tu clave?",
                             style: TextStyle(color: Colors.grey),
@@ -198,25 +261,4 @@ class LoginView extends StatelessWidget {
       ),
     );
   }
-}
-
-class CircleBackgroundPainter extends CustomPainter {
-  final List<Offset> points;
-
-  CircleBackgroundPainter({required this.points});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint =
-        Paint()
-          ..color = Colors.green
-          ..style = PaintingStyle.fill;
-
-    for (final point in points) {
-      canvas.drawCircle(point, 60, paint);
-    }
-  }
-
-  @override
-  bool shouldRepaint(CustomPainter oldDelegate) => false;
 }
