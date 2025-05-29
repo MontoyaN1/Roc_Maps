@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
-import 'main.dart'; // Asegúrate de que este import apunte al archivo donde está MyApp
+import 'package:provider/provider.dart';
+import 'package:rocmaps/auth_provider.dart';
+import 'package:rocmaps/login.dart';
+import 'package:rocmaps/theme_provider.dart';
+// Asegúrate de que este import apunte al archivo donde está MyApp
 
 class Barra extends StatefulWidget {
   const Barra({super.key});
@@ -50,17 +54,34 @@ class _BarraState extends State<Barra> {
                 },
               ),
             ] else ...[
-              ListTile(
-                leading: const Icon(Icons.dark_mode),
-                title: const Text("Modo oscuro"),
-                onTap: () {
-                  MyApp.of(context)?.toggleTheme();
-                  Navigator.pop(context);
-                },
+              Center(child: Text("Toca para cambiar de tema")),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Icon(Icons.light_mode),
+                  Consumer<ThemeProvider>(
+                    builder: (context, themeProvider, _) {
+                      return Switch(
+                        value: themeProvider.isDarkMode,
+                        onChanged: (value) {
+                          themeProvider.toggleTheme();
+                        },
+                      );
+                    },
+                  ),
+                  Icon(Icons.dark_mode),
+                ],
               ),
-              const ListTile(
-                leading: Icon(Icons.language),
-                title: Text("Idioma"),
+              ListTile(
+                leading: Icon(Icons.logout, color: Colors.red),
+                title: Text("Cerrar Sesión"),
+                onTap: () async {
+                  await context.read<AuthProvider>().logout();
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => LoginView()),
+                  );
+                },
               ),
             ],
           ],

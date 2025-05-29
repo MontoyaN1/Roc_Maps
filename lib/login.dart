@@ -1,6 +1,7 @@
-import 'package:rocmaps/auth_user.dart';
+import 'package:provider/provider.dart';
+import 'package:rocmaps/alerta.dart';
+import 'package:rocmaps/auth_provider.dart';
 import 'package:rocmaps/recupcontra.dart';
-
 import 'package:flutter/material.dart';
 import 'home.dart';
 import 'registro.dart';
@@ -15,7 +16,6 @@ class LoginView extends StatefulWidget {
 class _LoginViewState extends State<LoginView> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController contrasenaController = TextEditingController();
-  final _auth = AuthUser();
 
   @override
   void dispose() {
@@ -169,13 +169,35 @@ class _LoginViewState extends State<LoginView> {
                               borderRadius: BorderRadius.circular(10),
                             ),
                           ),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const HomeView(),
-                              ),
-                            );
+                          onPressed: () async {
+                            final correo = emailController.text.trim();
+                            final contrasena = contrasenaController.text.trim();
+
+                            if (correo.isEmpty || contrasena.isEmpty) {
+                              llenado(context);
+                            } else {
+                              final auth = context.read<AuthProvider>();
+                              final user = await auth.signInWithEmailPassword(
+                                correo,
+                                contrasena,
+                              );
+                              if (user != null) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const HomeView(),
+                                  ),
+                                );
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      'Correo electrónico o contraseña incorrectos',
+                                    ), // Mensaje de error en la interfaz
+                                  ),
+                                );
+                              }
+                            }
                           },
                           child: const Text(
                             "Ingresar",
@@ -194,9 +216,10 @@ class _LoginViewState extends State<LoginView> {
                           ),
                           label: const Text("Continuar con Google"),
                           onPressed: () async {
-                            final autenticado = await _auth.loginGoogle();
+                            final auth = context.read<AuthProvider>();
+                            await auth.loginGoogle();
 
-                            if (autenticado != null) {
+                            if (auth.isLoggedIn) {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(

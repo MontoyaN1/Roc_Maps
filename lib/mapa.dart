@@ -6,6 +6,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:rocmaps/grupo.dart';
+import 'package:rocmaps/miembros.dart';
 import 'package:rocmaps/unirse.dart';
 import 'package:rocmaps/chatbody.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -203,59 +204,114 @@ class _LiveLocationMapState extends State<MapaTiempoReal> {
   }
 
   void _showGroupOptions() {
-    showDialog(
-      context: context,
-      builder:
-          (context) => AlertDialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
+    if (widget.userId == "anonimo" && widget.groupId == "sin_grupo") {
+      showDialog(
+        context: context,
+        builder:
+            (context) => AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              title: const Text("¿Qué deseas hacer?"),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => GroupScreen()),
+                      );
+                    },
+                    child: const Text("Crear grupo"),
+                  ),
+                  const SizedBox(height: 10),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => JoinGroupScreen()),
+                      );
+                    },
+                    child: const Text("Unirse a grupo"),
+                  ),
+                  const SizedBox(height: 10),
+                ],
+              ),
             ),
-            title: const Text("¿Qué deseas hacer?"),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => GroupScreen()),
-                    );
-                  },
-                  child: const Text("Crear grupo"),
-                ),
-                const SizedBox(height: 10),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => JoinGroupScreen()),
-                    );
-                  },
-                  child: const Text("Unirse a grupo"),
-                ),
-                const SizedBox(height: 10),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder:
-                            (_) => Scaffold(
-                              appBar: AppBar(title: Text('Chat del Grupo')),
-                              body: ChatBody(
+      );
+    } else {
+      showDialog(
+        context: context,
+        builder:
+            (context) => AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              title: const Text("¿Qué deseas hacer?"),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => GroupScreen()),
+                      );
+                    },
+                    child: const Text("Crear grupo"),
+                  ),
+                  const SizedBox(height: 10),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => JoinGroupScreen()),
+                      );
+                    },
+                    child: const Text("Unirse a grupo"),
+                  ),
+                  const SizedBox(height: 10),
+
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder:
+                              (_) => Scaffold(
+                                appBar: AppBar(title: Text('Chat del Grupo')),
+                                body: ChatBody(
+                                  groupId: widget.groupId,
+                                  currentUserId: widget.userId,
+                                ),
+                              ),
+                        ),
+                      );
+                    },
+                    child: const Text("Ver chat"),
+                  ),
+                  const SizedBox(height: 10),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder:
+                              (_) => MiembrosScreen(
                                 groupId: widget.groupId,
                                 currentUserId: widget.userId,
                               ),
-                            ),
-                      ),
-                    );
-                  },
-                  child: const Text("Ver chat"),
-                ),
-              ],
+                        ),
+                      );
+                    },
+                    child: const Text("Ver miembros"),
+                  ),
+                ],
+              ),
             ),
-          ),
-    );
+      );
+    }
   }
 
   @override
@@ -290,24 +346,7 @@ class _LiveLocationMapState extends State<MapaTiempoReal> {
                 urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                 userAgentPackageName: 'com.example.app',
               ),
-              if (_currentPosition != null)
-                MarkerLayer(
-                  markers: [
-                    Marker(
-                      point: LatLng(
-                        _currentPosition!.latitude,
-                        _currentPosition!.longitude,
-                      ),
-                      width: 40,
-                      height: 40,
-                      child: const Icon(
-                        Icons.location_pin,
-                        color: Colors.red,
-                        size: 40,
-                      ),
-                    ),
-                  ],
-                ),
+
               if (_searchedLocation != null)
                 MarkerLayer(
                   markers: [
@@ -339,23 +378,79 @@ class _LiveLocationMapState extends State<MapaTiempoReal> {
                       _ubicacionesGrupo.entries.map((entry) {
                         final nombre = entry.key;
                         final datos = Map<String, dynamic>.from(entry.value);
+
                         final lat = datos['lat'];
                         final lng = datos['lng'];
-                        return Marker(
-                          point: LatLng(lat, lng),
-                          width: 60,
-                          height: 60,
-                          child: Column(
-                            children: [
-                              Icon(
-                                Icons.person_pin_circle,
-                                size: 30,
-                                color: Colors.blue,
+
+                        if (_currentPosition != null) {
+                          if (lat != _currentPosition?.latitude &&
+                              lng != _currentPosition?.longitude &&
+                              nombre != "anonimo") {
+                            return Marker(
+                              point: LatLng(lat, lng),
+                              width: 60,
+                              height: 60,
+                              child: Column(
+                                children: [
+                                  Icon(
+                                    Icons.person_pin_circle,
+                                    size: 30,
+                                    color: Colors.blue,
+                                  ),
+                                  Text(
+                                    nombre,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
                               ),
-                              Text(nombre, style: TextStyle(fontSize: 10)),
-                            ],
-                          ),
-                        );
+                            );
+                          } else {
+                            return Marker(
+                              point: LatLng(lat, lng),
+                              width: 65,
+                              height: 65,
+                              child: Column(
+                                children: [
+                                  Text(
+                                    "Tu",
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  Icon(
+                                    Icons.location_pin,
+                                    color: Colors.red,
+                                    size: 40,
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
+                        } else {
+                          return Marker(
+                            point: LatLng(lat, lng),
+                            width: 60,
+                            height: 60,
+                            child: Column(
+                              children: [
+                                Text(
+                                  "Tu",
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }
                       }).toList(),
                 ),
               RichAttributionWidget(
@@ -376,6 +471,7 @@ class _LiveLocationMapState extends State<MapaTiempoReal> {
             left: 20,
             right: 20,
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Material(
                   elevation: 6,

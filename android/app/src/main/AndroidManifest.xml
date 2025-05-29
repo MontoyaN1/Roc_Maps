@@ -1,9 +1,5 @@
-<<<<<<< HEAD
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.roc_maps" >
-=======
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
->>>>>>> a37d682af13f0e7b4451e5354c7779b53811c6f9
     <application
         android:label="roc_maps"
         android:name="${applicationName}"

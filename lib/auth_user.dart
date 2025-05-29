@@ -15,7 +15,7 @@ class AuthUser {
       );
       return await _auth.signInWithCredential(cred);
     } catch (e) {
-      print("Error en Google: " + e.toString());
+      print("Error en Google: $e");
     }
     return null;
   }

@@ -1,4 +1,5 @@
-import 'package:rocmaps/auth_user.dart';
+import 'package:provider/provider.dart';
+import 'package:rocmaps/auth_provider.dart';
 import 'package:rocmaps/home.dart';
 import 'login.dart';
 import 'alerta.dart';
@@ -16,7 +17,6 @@ class _RegisterViewState extends State<RegisterView> {
   final TextEditingController correoController = TextEditingController();
   final TextEditingController contrasenaController = TextEditingController();
   final TextEditingController fechaController = TextEditingController();
-  final _auth = AuthUser();
 
   @override
   void dispose() {
@@ -286,12 +286,13 @@ class _RegisterViewState extends State<RegisterView> {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text(
-                                    'La contraseña debe tener más de 6 carácteres ',
-                                  ), // Mensaje de error en la interfaz
+                                    'Debe tener más de 6 carácteres ',
+                                  ),
                                 ),
                               );
                             } else {
-                              final usuarioCreado = await _auth
+                              final auth = context.read<AuthProvider>();
+                              final usuarioCreado = await auth
                                   .createUserEmailPass(correo, contrasena);
 
                               if (usuarioCreado != null) {
@@ -345,9 +346,10 @@ class _RegisterViewState extends State<RegisterView> {
                           ),
                           label: const Text("Continuar con Google"),
                           onPressed: () async {
-                            final autenticado = await _auth.loginGoogle();
+                            final auth = context.read<AuthProvider>();
+                            await auth.loginGoogle();
 
-                            if (autenticado != null) {
+                            if (auth.isLoggedIn) {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
