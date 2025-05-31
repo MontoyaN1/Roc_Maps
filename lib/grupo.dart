@@ -23,7 +23,10 @@ class _GroupScreenState extends State<GroupScreen> {
     await _dbRef.child(groupId).set({
       'name': groupName,
       'owner': userName,
+      'admin': userName, // 👈 Aquí defines al admin
       'members': {userName: true},
+      'ubicaciones': {}, // opcional si quieres dejarlo preparado
+      'destino': {}, // idem
     });
 
     Navigator.pushReplacement(

@@ -20,6 +20,14 @@ class AuthUser {
     return null;
   }
 
+  void checkAccount(String correo) {
+    try {
+      _auth.fetchSignInMethodsForEmail(correo);
+    } catch (e) {
+      log("Fallo autenticar correo y clave: $e");
+    }
+  }
+
   Future<UserCredential?> singEmailPass(String email, String passw) async {
     try {
       return await _auth.signInWithEmailAndPassword(
@@ -41,6 +49,8 @@ class AuthUser {
         email: email,
         password: passw,
       );
+    } on FirebaseAuthException catch (e) {
+      print("Eror en FireBase  ${e.code} - ${e.message}");
     } catch (e) {
       print("Fallo crear cuenta con correo y clave: " + e.toString());
     }

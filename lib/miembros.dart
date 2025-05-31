@@ -25,7 +25,10 @@ class MiembrosScreen extends StatelessWidget {
         return confirmed;
       },
       child: Scaffold(
-        appBar: AppBar(title: Text('Miembros del Grupo')),
+        appBar: AppBar(
+          automaticallyImplyLeading: false, // Quita la flecha de retroceso
+          title: Text('Miembros del Grupo'),
+        ),
         body: StreamBuilder<DatabaseEvent>(
           stream: groupRef.onValue,
           builder: (context, snapshot) {
@@ -146,6 +149,53 @@ class MiembrosScreen extends StatelessWidget {
                           );
                         },
                       ),
+                      if (currentUserId == ownerId) ...[
+                        SizedBox(height: 10),
+                        ElevatedButton.icon(
+                          onPressed: () async {
+                            final confirmar = await showDialog<bool>(
+                              context: context,
+                              builder:
+                                  (_) => AlertDialog(
+                                    title: Text("Eliminar grupo"),
+                                    content: Text(
+                                      "¿Estás seguro de que deseas eliminar este grupo? Esta acción no se puede deshacer.",
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed:
+                                            () => Navigator.pop(context, false),
+                                        child: Text("Cancelar"),
+                                      ),
+                                      TextButton(
+                                        onPressed:
+                                            () => Navigator.pop(context, true),
+                                        child: Text(
+                                          "Eliminar",
+                                          style: TextStyle(color: Colors.red),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                            );
+
+                            if (confirmar == true) {
+                              await FirebaseDatabase.instance
+                                  .ref('groups/$groupId')
+                                  .remove();
+                              Navigator.pop(context);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Grupo eliminado')),
+                              );
+                            }
+                          },
+                          icon: Icon(Icons.delete),
+                          label: Text("Eliminar grupo"),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.red,
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                 ),
@@ -162,9 +212,7 @@ class MiembrosScreen extends StatelessWidget {
                         title: Text(userId),
                         subtitle: isOwner ? Text('Administrador') : null,
                         tileColor:
-                            isOwner
-                                ? const Color.fromARGB(255, 29, 102, 32)
-                                : null,
+                            isOwner ? Color.fromARGB(255, 29, 102, 32) : null,
                       );
                     },
                   ),

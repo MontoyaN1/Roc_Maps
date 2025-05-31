@@ -117,37 +117,7 @@ class _RegisterViewState extends State<RegisterView> {
                         ],
                       ),
                       const SizedBox(height: 20),
-                      const Text(
-                        "USUARIO",
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 6),
-                      TextField(
-                        controller: nombreController,
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.onSurface,
-                        ),
-                        decoration: InputDecoration(
-                          hintText: "Ingrese su Nombre",
-                          hintStyle: const TextStyle(color: Colors.grey),
-                          filled: true,
-                          fillColor: Theme.of(context).colorScheme.surface,
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(
-                              color: Color(0xFF16A35D), // verde del splash
-                              width: 1.5,
-                            ),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(
-                              color: Color(0xFF16A35D),
-                              width: 2.5,
-                            ),
-                          ),
-                        ),
-                      ),
+
                       const SizedBox(height: 20),
                       const Text(
                         "CORREO",
@@ -215,50 +185,6 @@ class _RegisterViewState extends State<RegisterView> {
                         ),
                       ),
                       const SizedBox(height: 20),
-                      const Text(
-                        "FECHA NACIMIENTO",
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 6),
-                      TextField(
-                        controller: fechaController,
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.onSurface,
-                        ),
-                        onTap: () async {
-                          final pickedDate = await showDatePicker(
-                            context: context,
-                            initialDate: DateTime.now(),
-                            firstDate: DateTime(1900),
-                            lastDate: DateTime.now(),
-                          );
-
-                          if (pickedDate != null) {
-                            fechaController.text =
-                                "${pickedDate.day}/${pickedDate.month}/${pickedDate.year}";
-                          }
-                        },
-                        decoration: InputDecoration(
-                          hintText: "Ingrese su Fecha Nacimiento",
-                          hintStyle: const TextStyle(color: Colors.grey),
-                          filled: true,
-                          fillColor: Theme.of(context).colorScheme.surface,
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(
-                              color: Color(0xFF16A35D), // verde del splash
-                              width: 1.5,
-                            ),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(
-                              color: Color(0xFF16A35D),
-                              width: 2.5,
-                            ),
-                          ),
-                        ),
-                      ),
 
                       const SizedBox(height: 25),
                       SizedBox(
@@ -272,15 +198,10 @@ class _RegisterViewState extends State<RegisterView> {
                             ),
                           ),
                           onPressed: () async {
-                            final nombre = nombreController.text.trim();
                             final correo = correoController.text.trim();
                             final contrasena = contrasenaController.text.trim();
-                            final fecha = fechaController.text.trim();
 
-                            if (nombre.isEmpty ||
-                                correo.isEmpty ||
-                                contrasena.isEmpty ||
-                                fecha.isEmpty) {
+                            if (correo.isEmpty || contrasena.isEmpty) {
                               llenado(context);
                             } else if (contrasena.length < 6) {
                               ScaffoldMessenger.of(context).showSnackBar(
