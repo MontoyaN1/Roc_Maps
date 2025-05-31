@@ -43,7 +43,7 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<UserCredential?> createUserEmailPass(String email, String passw) =>
+  Future<AuthResult> createUserEmailPass(String email, String passw) =>
       _authService.createUserEmailPass(email, passw);
 
   Future<void> sendPassReset(String email) => _authService.sendPassReset(email);

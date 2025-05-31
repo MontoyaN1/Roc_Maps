@@ -2,6 +2,16 @@ import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+class AuthResult {
+  final String? uid;
+  final String? error;
+
+  AuthResult.success(this.uid) : error = null;
+  AuthResult.failure(this.error) : uid = null;
+
+  bool get isSuccess => uid != null;
+}
+
 class AuthUser {
   final _auth = FirebaseAuth.instance;
 
@@ -20,14 +30,6 @@ class AuthUser {
     return null;
   }
 
-  void checkAccount(String correo) {
-    try {
-      _auth.fetchSignInMethodsForEmail(correo);
-    } catch (e) {
-      log("Fallo autenticar correo y clave: $e");
-    }
-  }
-
   Future<UserCredential?> singEmailPass(String email, String passw) async {
     try {
       return await _auth.signInWithEmailAndPassword(
@@ -40,21 +42,31 @@ class AuthUser {
     return null;
   }
 
-  Future<UserCredential?> createUserEmailPass(
-    String email,
-    String passw,
-  ) async {
+  Future<AuthResult> createUserEmailPass(String email, String passw) async {
     try {
-      return await _auth.createUserWithEmailAndPassword(
+      final credencial = await _auth.createUserWithEmailAndPassword(
         email: email,
         password: passw,
       );
+      return AuthResult.success(credencial.user?.uid);
     } on FirebaseAuthException catch (e) {
-      print("Eror en FireBase  ${e.code} - ${e.message}");
+      return AuthResult.failure(_translateAuthError(e));
     } catch (e) {
-      print("Fallo crear cuenta con correo y clave: " + e.toString());
+      return AuthResult.failure('Error inesperado: $e');
     }
-    return null;
+  }
+
+  String _translateAuthError(FirebaseAuthException e) {
+    switch (e.code) {
+      case 'email-already-in-use':
+        return 'El correo ya está registrado, prueba con otro';
+      case 'invalid-email':
+        return 'Formato de correo inválido';
+      case 'weak-password':
+        return 'La contraseña debe tener al menos 6 caracteres';
+      default:
+        return 'Error de autenticación: ${e.message}';
+    }
   }
 
   Future<void> sendPassReset(String email) async {

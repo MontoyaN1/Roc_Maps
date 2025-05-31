@@ -39,15 +39,12 @@ class _LiveLocationMapState extends State<MapaTiempoReal> {
   Timer? _envioUbicacionTimer;
   List<Map<String, dynamic>> _suggestions = [];
   Map<String, dynamic> _ubicacionesGrupo = {};
-  bool _esAdmin = false;
 
   @override
   void initState() {
     super.initState();
     _initLocationService();
-    verificarSiEsAdmin();
     escucharUbicacionesGrupo();
-    escucharDestinoGrupo();
     _envioUbicacionTimer = Timer.periodic(Duration(seconds: 3), (_) async {
       if (_currentPosition != null) {
         subirUbicacion(
@@ -68,16 +65,6 @@ class _LiveLocationMapState extends State<MapaTiempoReal> {
     super.dispose();
   }
 
-  void verificarSiEsAdmin() async {
-    final ref = FirebaseDatabase.instance.ref('groups/${widget.groupId}/admin');
-    final snapshot = await ref.get();
-    if (snapshot.exists && snapshot.value == widget.userId) {
-      setState(() {
-        _esAdmin = true;
-      });
-    }
-  }
-
   void subirUbicacion(String groupId, String userId, double lat, double lng) {
     final ubicacionRef = FirebaseDatabase.instance.ref(
       'groups/$groupId/ubicaciones/$userId',
@@ -87,13 +74,6 @@ class _LiveLocationMapState extends State<MapaTiempoReal> {
       'lng': lng,
       'timestamp': DateTime.now().toIso8601String(),
     });
-  }
-
-  void subirDestinoGrupo(LatLng destino) {
-    final ref = FirebaseDatabase.instance.ref(
-      'groups/${widget.groupId}/destino',
-    );
-    ref.set({'lat': destino.latitude, 'lng': destino.longitude});
   }
 
   void escucharUbicacionesGrupo() {
@@ -106,31 +86,6 @@ class _LiveLocationMapState extends State<MapaTiempoReal> {
         setState(() {
           _ubicacionesGrupo = Map<String, dynamic>.from(data);
         });
-      }
-    });
-  }
-
-  void escucharDestinoGrupo() {
-    final ref = FirebaseDatabase.instance.ref(
-      'groups/${widget.groupId}/destino',
-    );
-    ref.onValue.listen((event) {
-      final data = event.snapshot.value;
-      if (data != null && data is Map) {
-        final lat = data['lat'];
-        final lng = data['lng'];
-        final destino = LatLng(lat, lng);
-
-        setState(() {
-          _searchedLocation = destino;
-        });
-
-        if (_currentPosition != null) {
-          _getRoute(
-            LatLng(_currentPosition!.latitude, _currentPosition!.longitude),
-            destino,
-          );
-        }
       }
     });
   }
@@ -201,16 +156,12 @@ class _LiveLocationMapState extends State<MapaTiempoReal> {
     });
   }
 
-  void _onSuggestionTap(Map<String, dynamic> lugar) async {
-    if (!_esAdmin) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Solo el administrador puede marcar rutas"),
-        ),
-      );
-      return;
-    }
+  String _acortarNombre(String displayName) {
+    List<String> partes = displayName.split(',');
+    return partes.take(2).join(',').trim();
+  }
 
+  void _onSuggestionTap(Map<String, dynamic> lugar) async {
     _searchController.text = lugar['display_name'];
     setState(() => _suggestions = []);
 
@@ -218,7 +169,15 @@ class _LiveLocationMapState extends State<MapaTiempoReal> {
     final lon = double.parse(lugar['lon']);
     final destino = LatLng(lat, lon);
 
-    subirDestinoGrupo(destino);
+    setState(() {
+      _searchedLocation = destino;
+    });
+
+    _mapController.move(destino, 15);
+    await _getRoute(
+      LatLng(_currentPosition!.latitude, _currentPosition!.longitude),
+      destino,
+    );
   }
 
   Future<void> _getRoute(LatLng origen, LatLng destino) async {
@@ -250,7 +209,7 @@ class _LiveLocationMapState extends State<MapaTiempoReal> {
   }
 
   void _showGroupOptions() {
-    if (widget.groupId == "sin_grupo" && widget.userId == "anonimo") {
+    if (widget.userId == "anonimo" && widget.groupId == "sin_grupo") {
       showDialog(
         context: context,
         builder:
@@ -318,6 +277,7 @@ class _LiveLocationMapState extends State<MapaTiempoReal> {
                     child: const Text("Unirse a grupo"),
                   ),
                   const SizedBox(height: 10),
+
                   ElevatedButton(
                     onPressed: () {
                       Navigator.push(
@@ -443,7 +403,7 @@ class _LiveLocationMapState extends State<MapaTiempoReal> {
                                     color: Colors.blue,
                                   ),
                                   Text(
-                                    nombre,
+                                    _acortarNombre(nombre),
                                     style: TextStyle(
                                       fontSize: 12,
                                       color: Colors.black,
@@ -511,72 +471,86 @@ class _LiveLocationMapState extends State<MapaTiempoReal> {
               ),
             ],
           ),
-          if (_esAdmin || widget.groupId == "sin_grupo")
-            Positioned(
-              top: 50,
-              left: 20,
-              right: 20,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Material(
-                    elevation: 6,
-                    borderRadius: BorderRadius.circular(30),
-                    child: TextField(
-                      controller: _searchController,
-                      focusNode: _searchFocus,
-                      onChanged: _onSearchChanged,
-                      decoration: InputDecoration(
-                        hintText: "Buscar lugar o dirección...",
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                        ),
-                        border: InputBorder.none,
-                        suffixIcon: IconButton(
-                          icon: const Icon(Icons.search),
-                          onPressed:
-                              () => _onSearchChanged(_searchController.text),
-                        ),
+          Positioned(
+            top: 50,
+            left: 20,
+            right: 20,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Material(
+                  elevation: 6,
+                  borderRadius: BorderRadius.circular(30),
+                  child: TextField(
+                    controller: _searchController,
+                    focusNode: _searchFocus,
+                    onChanged: _onSearchChanged,
+                    decoration: InputDecoration(
+                      hintText: "Buscar lugar o dirección...",
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 20,
                       ),
-                    ),
-                  ),
-                  if (_suggestions.isNotEmpty)
-                    Container(
-                      margin: const EdgeInsets.only(top: 5),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).cardColor,
-                        borderRadius: BorderRadius.circular(8),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black26,
-                            blurRadius: 6,
-                            offset: const Offset(0, 2),
+                      border: InputBorder.none,
+                      suffixIcon: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (_searchController.text.isNotEmpty)
+                            IconButton(
+                              icon: const Icon(Icons.clear),
+                              onPressed: () {
+                                setState(() {
+                                  _searchController.clear();
+                                  _suggestions.clear();
+                                  _searchedLocation = null;
+                                  _routePoints.clear();
+                                });
+                              },
+                            ),
+                          IconButton(
+                            icon: const Icon(Icons.search),
+                            onPressed:
+                                () => _onSearchChanged(_searchController.text),
                           ),
                         ],
                       ),
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: _suggestions.length,
-                        itemBuilder: (context, index) {
-                          final lugar = _suggestions[index];
-                          return ListTile(
-                            title: Text(
-                              lugar['display_name'] ?? '',
-                              style: TextStyle(
-                                color:
-                                    Theme.of(
-                                      context,
-                                    ).textTheme.bodyLarge?.color,
-                              ),
-                            ),
-                            onTap: () => _onSuggestionTap(lugar),
-                          );
-                        },
-                      ),
                     ),
-                ],
-              ),
+                  ),
+                ),
+                if (_suggestions.isNotEmpty)
+                  Container(
+                    margin: const EdgeInsets.only(top: 5),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).cardColor,
+                      borderRadius: BorderRadius.circular(8),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black26,
+                          blurRadius: 6,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: _suggestions.length,
+                      itemBuilder: (context, index) {
+                        final lugar = _suggestions[index];
+                        return ListTile(
+                          title: Text(
+                            lugar['display_name'] ?? '',
+                            style: TextStyle(
+                              color:
+                                  Theme.of(context).textTheme.bodyLarge?.color,
+                            ),
+                          ),
+                          onTap: () => _onSuggestionTap(lugar),
+                        );
+                      },
+                    ),
+                  ),
+              ],
             ),
+          ),
         ],
       ),
       floatingActionButton: Row(
