@@ -148,7 +148,8 @@ class _LiveLocationMapState extends State<MapaTiempoReal> {
       );
 
       if (response.statusCode == 200) {
-        final List results = json.decode(response.body);
+        final responseJson = json.decode(response.body);
+        final List results = responseJson;
         setState(() {
           _suggestions = results.cast<Map<String, dynamic>>();
         });

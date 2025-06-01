@@ -15,7 +15,6 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
-        // Añade más providers aquí
       ],
       child: MyApp(),
     ),
